@@ -45,9 +45,9 @@ class Product:
         }
 
 class Inventory:
-    """Manages a collection of Product objects following the Single Responsibility Principle[cite: 4, 5]."""
+    """Manages a collection of Product objects and file persistence."""
     def __init__(self):
-        # Using a dictionary mapping product_id to Product object for fast lookups
+        # Dictionary mapping product_id to Product object for fast lookups
         self._products = {}
 
     def add_product(self, product: Product) -> bool:
@@ -73,7 +73,39 @@ class Inventory:
         for product in self._products.values():
             product.display_information()
         print("-------------------------")
+
+    def save_to_file(self, filename: str = "inventory.json") -> None:
+        """Saves all products in the inventory to a JSON file[cite: 5]."""
+        data = [product.to_dict() for product in self._products.values()]
+        try:
+            with open(filename, 'w') as f:
+                json.dump(data, f, indent=4)
+            print(f"Inventory successfully saved to {filename}.")
+        except IOError as e:
+            print(f"Error saving file: {e}")
+
+    def load_from_file(self, filename: str = "inventory.json") -> None:
+        """Loads inventory data from a JSON file and instantiates Product objects[cite: 5]."""
+        if not os.path.exists(filename):
+            print(f"No existing file found at {filename}. Starting with an empty inventory.")
+            return
         
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                self._products.clear()
+                for item in data:
+                    product = Product(
+                        item["product_id"],
+                        item["name"],
+                        float(item["price"]),
+                        int(item["stock"])
+                    )
+                    self._products[product.product_id] = product
+            print(f"Inventory successfully loaded from {filename}.")
+        except (IOError, json.JSONDecodeError) as e:
+            print(f"Error loading file: {e}")
+            
 def main():
     inventory = Inventory()
     inventory.load_from_file("inventory.json")
