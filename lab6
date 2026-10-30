@@ -73,3 +73,69 @@ class Inventory:
         for product in self._products.values():
             product.display_information()
         print("-------------------------")
+        
+def main():
+    inventory = Inventory()
+    inventory.load_from_file("inventory.json")
+
+    while True:
+        print("\n=== Inventory Management System ===")
+        print("1. Display all products")
+        print("2. Add a product")
+        print("3. Update stock")
+        print("4. Search for a product")
+        print("5. Save inventory")
+        print("6. Exit")
+        
+        choice = input("Enter your choice (1-6): ").strip()
+        
+        if choice == '1':
+            inventory.display_all()
+            
+        elif choice == '2':
+            pid = input("Enter Product ID: ").strip()
+            name = input("Enter Product Name: ").strip()
+            try:
+                price = float(input("Enter Price ($): "))
+                stock = int(input("Enter Initial Stock Quantity: "))
+                new_product = Product(pid, name, price, stock)
+                inventory.add_product(new_product)
+            except ValueError:
+                print("Invalid input! Price must be a number and stock must be an integer.")
+                
+        elif choice == '3':
+            pid = input("Enter Product ID to update stock: ").strip()
+            product = inventory.search_product(pid)
+            if product:
+                try:
+                    qty = int(input("Enter stock change amount (use negative number to reduce stock): "))
+                    product.update_stock(qty)
+                except ValueError:
+                    print("Invalid input! Quantity must be an integer.")
+            else:
+                print(f"Product with ID '{pid}' not found.")
+                
+        elif choice == '4':
+            pid = input("Enter Product ID to search: ").strip()
+            product = inventory.search_product(pid)
+            if product:
+                print("\nProduct Found:")
+                product.display_information()
+            else:
+                print(f"Product with ID '{pid}' not found.")
+                
+        elif choice == '5':
+            inventory.save_to_file("inventory.json")
+            
+        elif choice == '6':
+            inventory.save_to_file("inventory.json")
+            print("Exiting program. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 6.")
+
+
+if __name__ == "__main__":
+    import json
+    import os
+    main()
