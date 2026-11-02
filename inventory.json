@@ -10,5 +10,11 @@
         "name": "bacon",
         "price": 10.0,
         "stock": 30
+    },
+    {
+        "product_id": "400",
+        "name": "bread",
+        "price": 5.0,
+        "stock": 200
     }
 ]
